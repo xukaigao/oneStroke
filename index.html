@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>✏️ 一笔画</title>
+  <meta name="description" content="笔不离纸，把图形的每条线都画且只画一次。经典图形 + 随机关卡，认识一笔画的奥秘。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>✏️ 一笔画</h1>
+    <p class="tagline">笔不离纸，把图形的<strong>每条线都走一遍</strong>，而且<strong>每条只走一次</strong>！</p>
+  </header>
+
+  <section class="panel">
+    <button id="prevBtn" class="btn">‹ 上一图</button>
+    <span id="levelName" class="level-name">第 1 图</span>
+    <button id="nextBtn" class="btn">下一图 ›</button>
+    <button id="randomBtn" class="btn primary">随机一图 🎲</button>
+  </section>
+
+  <main class="board-wrap">
+    <div id="boardCard" class="board-card">
+      <div id="board"></div>
+    </div>
+    <p id="status" class="status">从一个圆点开始，沿着线一笔连下去～</p>
+    <div class="tools">
+      <button id="undoBtn" class="btn small">撤销</button>
+      <button id="restartBtn" class="btn small">重来</button>
+      <button id="hintBtn" class="btn small">提示</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    画法：先点一个<strong>圆点</strong>开始，然后<strong>按住拖到相邻的圆点</strong>，沿着已有的线走。走过的线会变成彩色，把所有线都走完就成功！走不通了就「撤销」或「重来」。
+  </footer>
+
+  <div id="praiseModal" class="praise-modal hidden" role="dialog" aria-modal="true" aria-live="polite">
+    <div class="praise-card">
+      <div class="praise-emoji">✏️</div>
+      <h2>一笔画成！</h2>
+      <p id="praiseText"></p>
+      <button id="praiseClose" class="btn primary">太棒了，下一图 →</button>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
