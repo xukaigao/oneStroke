@@ -267,29 +267,16 @@ function circleTriangleLevel() {
   ]);
 }
 
-/* 圆里弦弧（第24图）：整圆被 A(顶)、B(左)、C(底)、D(右) 分成 4 段弧；
-   圆内折线 A→C→D（两条弦）+ 一条 D↔B 的内弧（向上鼓，与竖弦交叉）。
-   奇数点为 A、B（两红点）→ 一头起笔另一头收笔。C-D 处「圆弧 + 弦」为多重边。 */
-function circleChordArcLevel() {
-  const A = [3.35, 0.59], B = [1.59, 3.65], C = [4.31, 5.48], D = [6.10, 4.36];
-  const arc = (p, q) => arcEdge(p[0], p[1], q[0], q[1], 4, 3, 2.5, 0, 1);
-  const line = (p, q) => ({ a: nkey(p[0], p[1]), b: nkey(q[0], q[1]), kind: "line" });
-  return finalizeLevel("圆里弦弧", [
-    arc(D, C), arc(C, B), arc(B, A), arc(A, D),          // 整圆 4 段弧（角度递增 D→C→B→A→D）
-    line(A, C), line(C, D),                              // 折线 A→C→D（两条弦）
-    arcEdge(B[0], B[1], D[0], D[1], 4.10, 5.61, 2.8, 0, 1), // 内弧 B↔D（向上鼓）
-  ]);
-}
-
-/* 圆内弦弧：整圆（4 段边界弧 A-B/B-C/C-D/D-A）+ 折线弦 A-C、C-D + 一条从 D 到 B 向上鼓的内弧。
-   逆时针 A(左上红点) B(左下红点) C(底) D(右)；C-D 弦与边界弧 C-D 是多重边（已把 C、D 拉开好区分）。
+/* 圆里弦弧（第24图）：整圆（4 段边界弧 A-B/B-C/C-D/D-A）+ 折线弦 A-C、C-D
+   + 一条从 D 到 B 向上鼓的内弧。逆时针 A(左上红点) B(左下红点) C(底) D(右)。
+   C-D 弦与边界弧 C-D 是多重边（已把 C、D 夹角拉大到约 90° 好区分）。
    奇数点为 A、B（两红点）→ 从一个红点起笔、另一个收笔。 */
 function circleChordArcLevel() {
   const A = [3.145, 0.651], B = [1.585, 3.647], C = [3.353, 5.415], D = [6.415, 3.647];
   const cx = 4, cy = 3, r = 2.5;
   const arc = (p, q) => arcEdge(p[0], p[1], q[0], q[1], cx, cy, r, 0, 1);
   const line = (p, q) => ({ a: nkey(p[0], p[1]), b: nkey(q[0], q[1]), kind: "line" });
-  return finalizeLevel("圆内弦弧", [
+  return finalizeLevel("圆里弦弧", [
     arc(D, C), arc(C, B), arc(B, A), arc(A, D),          // 边界 4 段弧（角度递增 D→C→B→A→D）
     line(A, C), line(C, D),                              // 折线弦 A-C、C-D
     arcEdge(B[0], B[1], D[0], D[1], 4, 4.6, 2.6, 0, 1),  // D↔B 内弧（向上鼓）
