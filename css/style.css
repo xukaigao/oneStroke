@@ -63,8 +63,8 @@ body {
 .tools { margin-top: 10px; display: flex; gap: 10px; justify-content: center; }
 
 /* SVG */
-.edge { stroke: var(--edge); stroke-width: 6; stroke-linecap: round; }
-.edge-done { stroke-width: 7; stroke-linecap: round; }
+.edge { stroke: var(--edge); stroke-width: 6; stroke-linecap: round; fill: none; }
+.edge-done { stroke-width: 7; stroke-linecap: round; fill: none; }
 .node { fill: var(--node); }
 .node-cur { fill: var(--node-cur); }
 .node-hint { fill: #ffd93b; }
