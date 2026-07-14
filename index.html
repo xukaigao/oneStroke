@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>✏️ 一笔画</title>
-  <meta name="description" content="笔不离纸，把图形的每条线都画且只画一次。经典图形 + 随机关卡，认识一笔画的奥秘。" />
+  <meta name="description" content="笔不离纸，把图形的每条线都画且只画一次。24 个经典图形，认识一笔画的奥秘。" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -17,9 +17,8 @@
 
   <section class="panel">
     <button id="prevBtn" class="btn">‹ 上一图</button>
-    <span id="levelName" class="level-name">第 1 图</span>
+    <select id="levelSelect" class="btn select" title="选择图形" aria-label="选择图形"></select>
     <button id="nextBtn" class="btn">下一图 ›</button>
-    <button id="randomBtn" class="btn primary">随机一图 🎲</button>
   </section>
 
   <main class="board-wrap">

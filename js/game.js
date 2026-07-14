@@ -5,7 +5,7 @@
    - 图 = 节点(圆点) + 边(线)。玩家从一个点出发，沿着边一笔连下去，
      每条边走且只走一次，把所有边走完即通关。
    - 边可以是【直线】或【圆弧】；同一对端点之间可以有多条边（如一个圆的两段弧）。
-   - 经典关卡手工定义；随机关卡用「随机闭合走线」构造，天然可解、无非节点交叉。
+   - 24 个固定图形，手工定义并已确保可一笔画成；用下拉框选图（无随机关卡）。
    - 欧拉算法(Hierholzer)用于：校验可解、计算合法起点、提示下一步。
    ============================================================ */
 
@@ -406,54 +406,6 @@ const CLASSIC = [
 ];
 
 /* ============================================================
-   随机关卡：随机「闭合走线」
-   只用横/竖单位边（永不在非节点处交叉），走出一条不重复边、
-   回到起点的闭合路径 → 连通且各点偶数度 → 必可一笔画成。
-   ============================================================ */
-function randomLevel() {
-  const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-  for (let attempt = 0; attempt < 300; attempt++) {
-    const used = new Set();
-    const sx = randInt(1, COLS - 1), sy = randInt(1, ROWS - 1);
-    let cx = sx, cy = sy;
-    const maxSteps = randInt(9, 16);
-    const minSteps = 7;
-    let steps = 0, closed = false;
-
-    while (steps < maxSteps) {
-      const nbrs = [];
-      for (const [dx, dy] of DIRS) {
-        const qx = cx + dx, qy = cy + dy;
-        if (qx < 0 || qx > COLS || qy < 0 || qy > ROWS) continue;
-        const ek = ekeyXY(cx, cy, qx, qy);
-        if (used.has(ek)) continue;
-        nbrs.push([qx, qy, ek]);
-      }
-      if (!nbrs.length) break;
-
-      const closer = nbrs.find(([qx, qy]) => qx === sx && qy === sy);
-      if (steps >= minSteps && closer && (Math.random() < 0.4 || nbrs.length === 1)) {
-        used.add(closer[2]);
-        closed = true;
-        break;
-      }
-      const open = nbrs.filter(([qx, qy]) => !(qx === sx && qy === sy));
-      const pool = open.length ? open : nbrs;
-      const pick = pool[randInt(0, pool.length - 1)];
-      used.add(pick[2]);
-      cx = pick[0]; cy = pick[1];
-      steps++;
-    }
-
-    if (closed && used.size >= 7) {
-      return makeLevelFromKeys("随机图", [...used]);
-    }
-  }
-  // 兜底：一个矩形
-  return makeLevel("随机图", [[2, 2, 6, 2], [6, 2, 6, 5], [6, 5, 2, 5], [2, 5, 2, 2]]);
-}
-
-/* ============================================================
    欧拉算法（Hierholzer）—— 作用于 edge 对象数组
    ============================================================ */
 function degreeMap(edges) {
@@ -542,7 +494,7 @@ const randomPraise = () => PRAISES[Math.floor(Math.random() * PRAISES.length)];
 /* ============================================================
    游戏状态
    ============================================================ */
-let pool = [...CLASSIC];   // 关卡序列：经典在前，随机的追加在后
+let pool = [...CLASSIC];   // 关卡序列：24 个固定图形（无随机）
 let idx = 0;
 let level = null;
 
@@ -556,7 +508,7 @@ let praiseTimer = null;
 
 /* DOM 引用 */
 let board, svg, gEdges, gNodes, gFx;
-let statusEl, levelNameEl, boardCard;
+let statusEl, levelSelectEl, boardCard;
 let praiseModal, praiseText;
 
 /* ---------- 渲染 ---------- */
@@ -787,15 +739,24 @@ function flashEdge(id) {
 
 /* ---------- 流程 ---------- */
 function loadLevel(i) {
-  idx = Math.max(0, i);
-  if (idx >= pool.length) pool.push(randomLevel());
+  idx = Math.max(0, Math.min(i, pool.length - 1));
   level = pool[idx];
   resetState();
-  const label = idx < CLASSIC.length ? `第 ${idx + 1} 图 · ${level.name}` : `第 ${idx + 1} 图 · 随机`;
-  levelNameEl.textContent = label;
+  if (levelSelectEl) levelSelectEl.value = String(idx);
   buildBoard();
   const starts = validStarts(level.edges).length;
   setStatus(starts <= 2 && starts > 0 ? "提示：要从特定的点起笔哦，点「提示」看看～" : "从任意一个圆点开始，沿着线一笔连下去～");
+}
+
+/* 关卡下拉框：列出 24 个固定图形 */
+function buildLevelSelect() {
+  levelSelectEl.innerHTML = "";
+  pool.forEach((lv, i) => {
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = `第 ${i + 1} 图 · ${lv.name}`;
+    levelSelectEl.appendChild(opt);
+  });
 }
 
 function resetState() {
@@ -839,18 +800,19 @@ function hidePraise() { if (praiseModal) praiseModal.classList.add("hidden"); }
 function init() {
   board = document.getElementById("board");
   statusEl = document.getElementById("status");
-  levelNameEl = document.getElementById("levelName");
+  levelSelectEl = document.getElementById("levelSelect");
   boardCard = document.getElementById("boardCard");
   praiseModal = document.getElementById("praiseModal");
   praiseText = document.getElementById("praiseText");
 
+  buildLevelSelect();
   document.getElementById("prevBtn").addEventListener("click", () => { if (idx > 0) loadLevel(idx - 1); });
-  document.getElementById("nextBtn").addEventListener("click", () => loadLevel(idx + 1));
-  document.getElementById("randomBtn").addEventListener("click", () => { pool.push(randomLevel()); loadLevel(pool.length - 1); });
+  document.getElementById("nextBtn").addEventListener("click", () => { if (idx < pool.length - 1) loadLevel(idx + 1); });
+  levelSelectEl.addEventListener("change", (e) => loadLevel(parseInt(e.target.value, 10)));
   document.getElementById("undoBtn").addEventListener("click", undo);
   document.getElementById("restartBtn").addEventListener("click", restart);
   document.getElementById("hintBtn").addEventListener("click", hint);
-  document.getElementById("praiseClose").addEventListener("click", () => { hidePraise(); loadLevel(idx + 1); });
+  document.getElementById("praiseClose").addEventListener("click", () => { if (idx < pool.length - 1) loadLevel(idx + 1); else hidePraise(); });
   praiseModal.addEventListener("click", (e) => { if (e.target === praiseModal) hidePraise(); });
 
   loadLevel(0);

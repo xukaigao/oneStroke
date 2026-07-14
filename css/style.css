@@ -38,6 +38,7 @@ body {
   padding: 12px; max-width: 720px; margin: 4px auto 0;
 }
 .level-name { font-weight: 700; color: var(--ink); min-width: 84px; text-align: center; }
+.select { appearance: none; padding-right: 16px; max-width: 260px; text-align: center; text-align-last: center; }
 
 .btn {
   font-size: 0.95rem; font-weight: 700; padding: 9px 16px;
